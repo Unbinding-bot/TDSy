@@ -1,43 +1,45 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'models/app_settings.dart';
+import 'providers/tds_provider.dart';
+import 'screens/home_screen.dart';
+import 'theme/app_themes.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      // Application name
-      title: 'Flutter Hello World',
-      // Application theme data, you can set the colors for the application as
-      // you want
-      theme: ThemeData(
-        // useMaterial3: false,
-        primarySwatch: Colors.blue,
-      ),
-      // A widget which will be started on application startup
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  final settings = AppSettings();
+  await settings.load();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: settings),
+        ChangeNotifierProxyProvider<AppSettings, TdsProvider>(
+          create: (ctx) => TdsProvider(settings),
+          update: (ctx, s, prev) => prev ?? TdsProvider(s),
+        ),
+      ],
+      child: const TdsMonitorApp(),
+    ),
+  );
 }
 
-class MyHomePage extends StatelessWidget {
-  final String title;
-  const MyHomePage({super.key, required this.title});  
+class TdsMonitorApp extends StatelessWidget {
+  const TdsMonitorApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // The title text which will be shown on the action bar
-        title: Text(title),
-      ),
-      body: Center(
-        child: Text(
-          'Hello, World!',
-        ),
-      ),
+  Widget build(BuildContext ctx) {
+    final settings = ctx.watch<AppSettings>();
+
+    return MaterialApp(
+      title: 'TDS Monitor',
+      debugShowCheckedModeBanner: false,
+      themeMode: settings.themeMode,
+      theme: buildTheme(settings.themeChoice, Brightness.light),
+      darkTheme: buildTheme(settings.themeChoice, Brightness.dark),
+      home: const HomeScreen(),
     );
   }
 }

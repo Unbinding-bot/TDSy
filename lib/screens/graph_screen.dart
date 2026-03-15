@@ -125,7 +125,7 @@ class _GraphScreenState extends State<GraphScreen> {
                           show: true,
                           drawVerticalLine: false,
                           getDrawingHorizontalLine: (_) => FlLine(
-                              color: cs.outlineVariant.withOpacity(0.3),
+                              color: cs.outlineVariant.withValues(alpha: 0.3),
                               strokeWidth: 0.5),
                         ),
                         borderData: FlBorderData(show: false),
@@ -178,7 +178,7 @@ class _GraphScreenState extends State<GraphScreen> {
                             dotData: FlDotData(show: slice.length < 30),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: cs.primary.withOpacity(0.08),
+                              color: cs.primary.withValues(alpha: 0.08),
                             ),
                           ),
                         ],
@@ -215,9 +215,9 @@ class _StatChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

@@ -6,7 +6,7 @@ import '../models/app_settings.dart';
 import '../services/esp32_service.dart';
 import '../services/csv_service.dart';
 
-enum ConnectionState { disconnected, connecting, connected, error }
+enum Esp32ConnectionState { disconnected, connecting, connected, error }
 
 class TdsProvider extends ChangeNotifier {
   final AppSettings settings;
@@ -14,7 +14,7 @@ class TdsProvider extends ChangeNotifier {
   TdsProvider(this.settings);
 
   // ── State ─────────────────────────────────────────────────────────────────
-  ConnectionState connectionState = ConnectionState.disconnected;
+  Esp32ConnectionState connectionState = Esp32ConnectionState.disconnected;
   TdsReading?     latest;
   final List<TdsReading> history  = [];  // newest first, capped at 500
   static const int _historyMax    = 500;
@@ -30,7 +30,7 @@ class TdsProvider extends ChangeNotifier {
   Future<void> startPolling() async {
     if (_isPolling) return;
     _isPolling = true;
-    connectionState = ConnectionState.connecting;
+    connectionState = Esp32ConnectionState.connecting;
     notifyListeners();
 
     // Create a fresh CSV file for this session
@@ -47,7 +47,7 @@ class TdsProvider extends ChangeNotifier {
     _pollTimer?.cancel();
     _pollTimer = null;
     _isPolling = false;
-    connectionState = ConnectionState.disconnected;
+    connectionState = Esp32ConnectionState.disconnected;
     notifyListeners();
   }
 
@@ -58,13 +58,13 @@ class TdsProvider extends ChangeNotifier {
     final svc = Esp32Service(settings.esp32Ip);
     final reading = await svc.fetchLatest();
     if (reading == null) {
-      connectionState = ConnectionState.error;
+      connectionState = Esp32ConnectionState.error;
       _errorMsg = 'Cannot reach ${settings.esp32Ip}';
       notifyListeners();
       return;
     }
 
-    connectionState = ConnectionState.connected;
+    connectionState = Esp32ConnectionState.connected;
     _errorMsg = '';
     latest = reading;
 

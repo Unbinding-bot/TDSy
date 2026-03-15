@@ -231,8 +231,8 @@ class _ThemeChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: selected
-              ? choice.seed.withOpacity(0.15)
-              : Theme.of(ctx).colorScheme.surfaceVariant.withOpacity(0.4),
+              ? choice.seed.withValues(alpha: 0.15)
+              : Theme.of(ctx).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? choice.seed : Colors.transparent,

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../models/tds_reading.dart';
 import '../providers/tds_provider.dart';
 import 'graph_screen.dart';
 import 'settings_screen.dart';
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(provider.isPolling
                 ? Icons.wifi
                 : Icons.wifi_off),
-            color: provider.connectionState == ConnectionState.connected
+            color: provider.connectionState == Esp32ConnectionState.connected
                 ? const Color(0xFF1D9E75)
                 : null,
             onPressed: () => provider.isPolling
@@ -198,17 +199,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // ── Status banner ──────────────────────────────────────────────────────────
 class _StatusBanner extends StatelessWidget {
-  final ConnectionState state;
+  final Esp32ConnectionState state;
   final String error;
   const _StatusBanner({required this.state, required this.error});
 
   @override
   Widget build(BuildContext ctx) {
     final (icon, label, color) = switch (state) {
-      ConnectionState.connected    => (Icons.wifi,            'Connected',   const Color(0xFF0F6E56)),
-      ConnectionState.connecting   => (Icons.wifi_find,       'Connecting…', Colors.orange),
-      ConnectionState.error        => (Icons.wifi_off,        error,         Theme.of(ctx).colorScheme.error),
-      ConnectionState.disconnected => (Icons.wifi_off,        'Disconnected', Colors.grey),
+      Esp32ConnectionState.connected    => (Icons.wifi,       'Connected',   const Color(0xFF0F6E56)),
+      Esp32ConnectionState.connecting   => (Icons.wifi_find,  'Connecting…', Colors.orange),
+      Esp32ConnectionState.error        => (Icons.wifi_off,   error,         Colors.red),
+      Esp32ConnectionState.disconnected => (Icons.wifi_off,   'Disconnected', Colors.grey),
     };
     return Row(
       children: [
@@ -236,9 +237,9 @@ class _QualityBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       decoration: BoxDecoration(
-        color: quality.color.withOpacity(0.15),
+        color: quality.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: quality.color.withOpacity(0.4)),
+        border: Border.all(color: quality.color.withValues(alpha: 0.4)),
       ),
       child: Text(quality.label,
           style: TextStyle(
@@ -249,14 +250,14 @@ class _QualityBadge extends StatelessWidget {
 
 // ── Sparkline (last 50 points) ─────────────────────────────────────────────
 class _SparkLine extends StatelessWidget {
-  final List<dynamic> history;
+  final List<TdsReading> history;
   const _SparkLine({required this.history});
 
   @override
   Widget build(BuildContext ctx) {
     final points = history.take(50).toList().reversed.toList();
     final spots = List.generate(points.length,
-        (i) => FlSpot(i.toDouble(), (points[i].tdsPpm as double)));
+        (i) => FlSpot(i.toDouble(), points[i].tdsPpm));
 
     final cs = Theme.of(ctx).colorScheme;
     return LineChart(
@@ -265,7 +266,7 @@ class _SparkLine extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) =>
-              FlLine(color: cs.outlineVariant.withOpacity(0.3), strokeWidth: 0.5),
+              FlLine(color: cs.outlineVariant.withValues(alpha: 0.3), strokeWidth: 0.5),
         ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
@@ -290,7 +291,7 @@ class _SparkLine extends StatelessWidget {
             dotData: FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: cs.primary.withOpacity(0.08),
+              color: cs.primary.withValues(alpha: 0.08),
             ),
           ),
         ],

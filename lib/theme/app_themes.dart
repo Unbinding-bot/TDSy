@@ -32,7 +32,7 @@ ThemeData buildTheme(AppThemeChoice choice, Brightness brightness) {
       seedColor: choice.seed,
       brightness: brightness,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),

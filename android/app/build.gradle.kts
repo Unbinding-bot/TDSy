@@ -21,8 +21,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.tds_monitor"
-        // Minimum SDK 21 covers ~99 % of active Android devices
-        minSdk flutter.minSdkVersion
+        minSdk 21
         targetSdk flutter.targetSdkVersion
         versionCode flutter.versionCode
         versionName flutter.versionName
